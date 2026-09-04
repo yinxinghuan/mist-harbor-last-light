@@ -1,0 +1,60 @@
+{
+  "name": "mist-harbor-last-light",
+  "version": "0.9.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && node scripts/build-story-worker.mjs",
+    "preview": "vite preview",
+    "test:protocol": "node --import tsx _qa/protocol.ts",
+    "test:danger": "node --import tsx _qa/danger-director.ts",
+    "test:danger-grounding": "node --import tsx _qa/danger-directive-grounding.ts",
+    "test:payment": "node --import tsx _qa/payment-consistency.ts",
+    "test:turn": "node --import tsx _qa/turn-consistency.ts",
+    "test:dynamic-locations": "node --import tsx _qa/dynamic-locations.ts",
+    "test:pipeline": "node --import tsx _qa/turn-pipeline.ts",
+    "test:domain-continuity": "node --import tsx _qa/domain-thread-continuity.ts",
+    "test:mist-harbor": "node --import tsx _qa/mist-harbor-domain.ts",
+    "test:authority-shadow": "node --import tsx _qa/authority-shadow.ts",
+    "test:server-turn": "node --import tsx _qa/server-turn-pipeline.ts",
+    "test:prolog-rule-client": "node --import tsx _qa/prolog-rule-client.ts",
+    "test:prolog-live": "node --import tsx _qa/prolog-live-integration.ts",
+    "test:story-session-client": "node --import tsx _qa/story-session-client.ts",
+    "test:story-session-prolog": "node --import tsx _qa/story-session-prolog-boundary.ts",
+    "test:story-session-identity": "node --import tsx _qa/story-session-alteru-identity.ts",
+    "test:alteru-user-browser": "node _qa/alteru-user-system-browser.mjs",
+    "test:multi-round": "node _qa/run-multi-round.mjs",
+    "test:story-session-persistence": "node --import tsx _qa/story-session-persistence.ts",
+    "test:story-session-directory": "node --import tsx _qa/story-session-directory.ts",
+    "test:story-session-migration": "node --import tsx _qa/story-session-migration.ts",
+    "test:story-session-history-browser": "node _qa/story-session-history-browser.mjs",
+    "test:visual": "node _qa/mist-harbor-visual-browser.mjs",
+    "story:ui-lab": "node --import tsx _qa/run-story-session-ui.ts",
+    "check:story-session": "tsc -p tsconfig.story-session.json",
+    "test:recovery-choice-priority": "node --import tsx _qa/recovery-choice-priority.ts",
+    "test:active-thread": "node --import tsx _qa/active-thread-continuity.ts",
+    "test:choice-quality": "node --import tsx _qa/recommended-choice-quality.ts",
+    "test:character-debut": "node --import tsx _qa/character-debut.ts",
+    "test:perspective-director": "node --import tsx _qa/perspective-director.ts",
+    "test:preset-events": "node --import tsx _qa/preset-events.ts",
+    "test:v9-migration": "node --import tsx _qa/v9-migration.ts"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "less": "^4.2.0",
+    "playwright": "^1.62.1",
+    "tsx": "^4.23.5",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.21"
+  }
+}

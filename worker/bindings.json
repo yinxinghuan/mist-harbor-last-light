@@ -1,0 +1,25 @@
+{
+  "bindings": [
+    {
+      "type": "durable_object_namespace",
+      "name": "STORY_SESSIONS",
+      "class_name": "StorySessionAuthority"
+    },
+    {
+      "type": "plain_text",
+      "name": "RULE_SERVICE_URL",
+      "text": "https://uu545921-zfkm-aec62664.westb.seetacloud.com:8443"
+    },
+    {
+      "type": "plain_text",
+      "name": "RULE_SERVICE_REQUIRED",
+      "text": "true"
+    }
+  ],
+  "migrations": {
+    "new_tag": "story-session-v1",
+    "new_sqlite_classes": [
+      "StorySessionAuthority"
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "$schema": "./world-brief.schema.json",
+  "game": {
+    "id": "mist-harbor-last-light",
+    "titleZh": "雾港最后一盏灯",
+    "titleEn": "The Last Light of Mist Harbor",
+    "mode": "guided",
+    "languages": ["zh", "en"]
+  },
+  "experience": {
+    "playerFantasy": "你是暴风夜里临时接管旧港信号站的守灯人，可以在港区自由调查、调动物资并决定相信谁。",
+    "emotionalPromise": "用普通工具和人的承诺，在潮水封路前把一艘失联渡船引回港口。",
+    "commonKnowledgeBoundary": "世界遵循熟悉的港口、潮汐、灯塔和机械常识，不要求玩家掌握航海专业知识。",
+    "openingObjective": "查明主灯为何熄灭，并在下一次涨潮前恢复至少一条可信的归航信号。"
+  },
+  "world": {
+    "fixedRules": [
+      "潮汐只由已提交的回合和确定性规则推进，不能被叙事随意改写。",
+      "角色只知道自己亲眼见到、被告知或从可靠记录读到的事实。",
+      "人物位置、物品归属、门锁、灯油、承诺和已修复设备必须进入权威状态。",
+      "Prolog 只判断规则和状态变化，Story Session 是唯一持久化写入者。"
+    ],
+    "generationRules": [
+      "AI 可以补充天气细节、港工往事、局部传闻和不改变规则的小冲突。",
+      "每个有效回合至少改变位置、线索、关系、物资、设备或潮汐事实中的一项。",
+      "失败造成绕路、灯油损失、信任下降或救援窗口缩短，不删除存档。"
+    ],
+    "maxActiveThreads": 3
+  },
+  "stats": [
+    {
+      "id": "resolve",
+      "labelZh": "镇定",
+      "labelEn": "Resolve",
+      "min": 0,
+      "max": 6,
+      "initial": 4,
+      "display": "number",
+      "dangerDirection": "low",
+      "warningAt": 2,
+      "dangerAt": 0,
+      "maxDelta": 2
+    },
+    {
+      "id": "trust",
+      "labelZh": "港区信任",
+      "labelEn": "Harbor Trust",
+      "min": 0,
+      "max": 6,
+      "initial": 1,
+      "display": "number",
+      "dangerDirection": "low",
+      "warningAt": 1,
+      "dangerAt": 0,
+      "maxDelta": 2
+    },
+    {
+      "id": "signal",
+      "labelZh": "信号稳定",
+      "labelEn": "Signal Stability",
+      "min": 0,
+      "max": 6,
+      "initial": 1,
+      "display": "bar",
+      "dangerDirection": "low",
+      "warningAt": 2,
+      "dangerAt": 0,
+      "maxDelta": 2
+    }
+  ],
+  "choiceIntents": [
+    "调查地点或设备",
+    "移动、取用物品或修复设施",
+    "向港区角色求助、交换信息或承担风险"
+  ],
+  "signatureItem": {
+    "nameZh": "风暴提灯",
+    "nameEn": "Storm Lantern",
+    "ability": "照亮被淹通道、读取设备标记，并让同伴在雾中跟随玩家。",
+    "limitOrCost": "初始只有三格灯油；港区内只有一次可靠补充机会。",
+    "provenance": "上一任守灯人留在信号站值班桌上的旧提灯。"
+  },
+  "danger": {
+    "minSafeTurns": 2,
+    "maxSafeTurns": 4,
+    "cooldownTurns": 2,
+    "physicalCombat": "none",
+    "methods": [
+      "用风暴提灯确认下一段落脚点",
+      "请已经取得信任的港工带路",
+      "退回信号站重新规划路线"
+    ],
+    "threatPalette": [
+      "涨潮淹没原来的港区通道",
+      "暴风切断刚修好的临时电路",
+      "浓雾让两种相互矛盾的信号同时出现",
+      "失联渡船在错误航道留下短暂灯影"
+    ],
+    "fallbackStatId": "resolve",
+    "fallbackAmount": 1
+  },
+  "visuals": {
+    "material": "harbor",
+    "artDirection": "深蓝暴风夜、氧化黄铜、湿木与暖色信号灯构成的编辑插画式港口悬疑",
+    "entryScene": "暴雨中的旧港信号站，远处海面只有一束不稳定的白光，画面没有可读文字",
+    "sceneImageDirection": "克制的电影式港口悬疑插画，一个明确行动焦点，设备与潮水状态真实可辨，无 UI 和可读文字",
+    "itemImageDirection": "旧港工具和证物的档案式静物，湿木与深色布面背景，无人物、无可读文字"
+  },
+  "audio": {
+    "mood": "低频海风、稀疏浮标钟、旧继电器和远处汽笛，关键修复时出现短促温暖的黄铜共鸣",
+    "bpm": 52
+  },
+  "ending": {
+    "type": "chapter-boundary",
+    "failureConsequences": [
+      "通道被潮水暂时封闭",
+      "损失一格灯油",
+      "港区信任下降",
+      "必须改用更危险的备用信号",
+      "同伴暂时离开当前地点"
+    ]
+  }
+}

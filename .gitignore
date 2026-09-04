@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.DS_Store
+
+# Local construction worktrees retained for recovery; the release project lives at repo root.
+app/
+.story-engine/
+prolog-service/
+
+# Rule-service credentials and local process artifacts never enter the repository.
+*.env
+*.pid
+*.log
