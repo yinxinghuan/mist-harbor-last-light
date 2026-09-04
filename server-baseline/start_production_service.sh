@@ -14,7 +14,7 @@ set -a
 source "$env_file"
 set +a
 
-export RULE_SERVICE_BIND="${RULE_SERVICE_BIND:-0.0.0.0}"
-export RULE_SERVICE_PORT="${RULE_SERVICE_PORT:-8000}"
+export RULE_SERVICE_BIND="${RULE_SERVICE_BIND:-127.0.0.1}"
+export RULE_SERVICE_PORT="${RULE_SERVICE_PORT:-6008}"
 
 exec /usr/local/bin/swipl -q -s "$launcher" -g main
