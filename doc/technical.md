@@ -24,6 +24,7 @@ worker/
 server-baseline/
   alteru_extension.pl                 # Wilson 框架的 Story Session 兼容层
   production_launcher.pl              # 仅保留 /health 与 /v1/resolve 的生产入口
+  supervisord.conf                     # 普通账号可用的进程守护与日志轮转
   games/mist_harbor_last_light/       # 本游戏 Prolog 房间、物品、角色与动作
   *_test*.sh                          # 原框架、完整路线、并发和生产路由测试
 _qa/                                  # 协议、恢复、身份、浏览器和视觉验证
@@ -60,7 +61,9 @@ Worker 配置：
 - `RULE_SERVICE_TOKEN`：至少 32 字节的服务间 secret；
 - `RULE_SERVICE_REQUIRED=true`：正式实验 fail closed，配置或服务不可用时不推进确定性动作。
 
-截至 2026-09-04，服务器内 loopback 服务、SSH 隧道完整路线和令牌校验代码已完成；现有 `8443` 尚未代理到 loopback 端口，因此正式 Worker → HTTPS → Prolog 闭环尚未完成，也不能把游戏标记为线上发布完成。
+截至 2026-09-05，正式链路已经完成：Prolog 只监听服务器 `127.0.0.1:6008`，由 AutoDL 当前实例的 HTTPS 自定义服务地址转发到公网 `8443`；用户态 supervisord 守护并自动重启服务；Worker 以加密 secret 注入令牌，`RULE_SERVICE_REQUIRED=true`。线上 canary 已完成一次前置条件拒绝和十动作通关，同时覆盖 enrollment/action 幂等、旧版本冲突、Durable Object 重读、目录和跨 owner 隔离。
+
+正式主站是 `https://game.aiwaves.tech/8a51d15e-7c00-4e27-bc63-25624ee75ac1/`。GitHub Pages 是同 bundle 的静态镜像，不承载可写 Story Session；正式 RPG 验收只以 UUID 主站为准。
 
 ## 4. 扩展点
 

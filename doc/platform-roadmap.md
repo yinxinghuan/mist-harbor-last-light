@@ -42,14 +42,14 @@
 - 配额：用户构建次数、规则复杂度、运行时 CPU、模型调用和媒体生成分别限额。
 - 发布：规则 artifact hash 与前端 commit、Worker 版本一起锁定；不允许前端和规则集漂移。
 
-## 进入正式线上实验仍需要的支持
+## 正式线上实验状态
 
 1. SSH 公钥、原始框架和 SWI-Prolog 已经可用，不再是阻塞项；
 2. 服务器 loopback 上的安全生产入口已完成：只保留 `/health` 与带 token 的 `/v1/resolve`；
-3. 现有 `https://…:8443` 仍返回云平台 404，需要把它代理到 loopback 规则端口，或提供另一条 Worker 可访问的受保护 HTTPS 地址；
-4. 用 supervisor、容器或其他账号可用方式托管并自动重启；当前账号没有 user systemd；
-5. 将同一服务 token 注入服务器私有环境和 Worker secret，并设置 `RULE_SERVICE_REQUIRED=true`；
-6. 完成 Worker → HTTPS → Prolog → Story Session 的线上回合与开发工具验收；
-7. 后续提供 AlterU 服务端签名用户身份，而不是仅由前端传 `user_id`。
+3. AutoDL 当前实例的 `6008` 回环端口已经通过受保护 HTTPS `8443` 提供给 Worker；
+4. 用户态 supervisord 已托管服务，并通过主动终止子进程确认自动拉起；
+5. 同一服务 token 已注入服务器私有环境与 Worker secret，正式环境设置 `RULE_SERVICE_REQUIRED=true`；
+6. Worker → HTTPS → Prolog → Story Session 已完成 11 次线上提交、十动作通关、幂等、版本冲突、恢复和隔离 canary；
+7. 自托管主站与 GitHub Pages 已验证实际 JavaScript bundle 完全一致。
 
-第 3–6 项完成后才能把第一款实验称为正式发布；第 7 项是开放给普通用户制作游戏之前的生产门禁。
+当前仍需在游戏目录迁移后，用 AlterU/Telegram 内部开发工具完成真实平台用户入口验收。后续还需要 AlterU 服务端签名用户身份，而不是仅由前端传 `user_id`；它是开放给普通用户制作游戏之前的生产门禁，但不阻塞本次受控实验。

@@ -241,32 +241,31 @@ Story Session → 真实 SWI-Prolog 端到端测试：
 
 因为 `/v1/resolve` 每回合都会从 Story Session 快照重建 Prolog session，这条测试也覆盖了“Prolog 内存完全丢失后仍可继续”的恢复模型。
 
-## 8. 当前不能宣称的事项
+## 8. 生产部署结果
 
-2026-09-04 已新增并实测生产收口：
+2026-09-05 已新增并实测生产收口：
 
 - `production_launcher.pl` 启动前强制要求 `RULE_SERVICE_TOKEN`；
 - `/v1/resolve` 无令牌返回 403，有正确令牌才能执行；
 - 请求体上限 64 KiB；
 - 原始 `/consult`、加载、session、移动、物品、对话和实验 `/game/*` 路由在生产 listener 上均为 404；
-- 服务只监听服务器 `127.0.0.1:8000`，通过 SSH 隧道再次跑通完整章节。
+- 服务只监听服务器 `127.0.0.1:6008`，由 AutoDL 当前实例的双 `u` HTTPS 自定义服务地址转发到公网 `8443`；
+- 用户态 supervisord 的父进程已脱离 SSH（PPID 1），主动终止 Prolog 子进程后自动拉起新 PID并恢复健康；
+- Worker secret 已注入，`RULE_SERVICE_REQUIRED=true`；
+- 正式 UUID 主站完成前置条件拒绝、十动作通关、幂等重放、旧版本冲突、持久化重读和跨 owner 隔离。
 
 目前仍不能宣称：
 
-- 服务已经由 supervisor/容器托管并能在服务器重启后自动恢复；
-- 服务已发布到公网或生产私网；
-- Cloudflare Worker 已能访问该服务器；
 - 两个真实 AlterU 账号完成线上闭环；
-- 游戏已经上线。
+- AlterU 用户 ID 已由服务端签名或不可伪造；
+- AutoDL 实例整机重启后的恢复已经实测（已验证的是子进程异常退出自动恢复）。
 
-## 9. 下一步所需支持
+## 9. 剩余平台验收
 
-要把实验升级成可发布链路，需要同事提供或确认：
+发布技术链路已经完成，剩余步骤是：
 
-1. 把现有 `https://uu545921-zfkm-aec62664.westb.seetacloud.com:8443` 代理到服务器 loopback `127.0.0.1:8000`，或提供另一条 Worker 可访问的受保护 HTTPS 网关；当前该地址的 `/health` 仍是云平台 404；
-2. 进程托管方式（supervisor 或容器；当前账号没有 user systemd），并保持只监听 loopback/私网；
-3. 外部只转发 `/health` 和 `/v1/resolve`，禁止暴露原始 `/consult`；
-4. 明确 HTTPS 超时、日志和重启策略；
-5. 把同一私有 token 注入 Worker secret，并保留 `RULE_SERVICE_URL`、`RULE_SERVICE_REQUIRED=true`。
+1. 把游戏目录记录迁移进 AlterU 平台；
+2. 在 Telegram/AlterU 内部开发工具中，以真实平台用户打开游戏，验证首次进入、一次 Prolog 动作、重进续玩和目录恢复；
+3. 如需正式开放给普通用户制作游戏，再补服务端签名身份、构建控制面、规则 artifact 签名、配额、审计和回滚。
 
 AlterU 服务端签名身份仍是面向普通用户开放制作平台之前的安全门禁，但不阻塞当前受控实验继续。

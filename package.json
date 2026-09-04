@@ -23,6 +23,7 @@
     "test:server-turn": "node --import tsx _qa/server-turn-pipeline.ts",
     "test:prolog-rule-client": "node --import tsx _qa/prolog-rule-client.ts",
     "test:prolog-live": "node --import tsx _qa/prolog-live-integration.ts",
+    "test:selfhost-live": "node --import tsx _qa/selfhost-live-canary.ts",
     "test:story-session-client": "node --import tsx _qa/story-session-client.ts",
     "test:story-session-prolog": "node --import tsx _qa/story-session-prolog-boundary.ts",
     "test:story-session-identity": "node --import tsx _qa/story-session-alteru-identity.ts",

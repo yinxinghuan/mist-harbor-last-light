@@ -131,11 +131,11 @@ tail -n 100 /var/log/auth.log
 
 ## 6. SSH 开通后需要的部署条件（当前阶段）
 
-SSH 公钥已经可用。服务器上 `/home/prolog/game_logic1` 的原始框架与同事提供包一致，本项目兼容层位于 `/home/prolog/alteru-prolog-experiment`。目前仍需要服务器支持以下条件：
+SSH 公钥已经可用。服务器上 `/home/prolog/game_logic1` 的原始框架与同事提供包一致，本项目兼容层位于 `/home/prolog/alteru-prolog-experiment`。截至 2026-09-05，下列服务器条件已经满足：
 
 1. 已确认 SWI-Prolog 10.1.13 可用；
 2. 已确认可在普通 `prolog` 用户目录上传并运行服务；
-3. 提供 supervisor、容器或其他可用的进程托管方式并自动重启；当前 user systemd 不可用，现有 `nohup` 只用于受控实验；
+3. 使用普通账号可运行的 supervisord 托管并自动重启；当前 user systemd 不可用；
 4. Prolog HTTP 服务只监听 `127.0.0.1` 或私有网络；
 5. 提供一个可被 Story Session Worker 访问的受保护 HTTPS 地址；
 6. HTTPS/私网网关只转发 Prolog 兼容层的 `/health` 和 `/v1/resolve`，不得转发原始 `/consult`；
@@ -146,7 +146,7 @@ SSH 公钥已经可用。服务器上 `/home/prolog/game_logic1` 的原始框架
 
 ```text
 RULE_SERVICE_BIND=127.0.0.1
-RULE_SERVICE_PORT=8000
+RULE_SERVICE_PORT=6008
 RULE_SERVICE_TOKEN=<由服务器安全生成和保存的随机值>
 ```
 
@@ -165,22 +165,16 @@ RULE_SERVICE_TOKEN=<由服务器安全生成和保存的随机值>
 7. 原始/扩展并发对比。
 8. 生产 listener 的 token 验证、请求体上限和管理路由 404；
 9. 生产 listener 通过 SSH 隧道再次完成 10 动作章节。
+10. AutoDL `6008` → HTTPS `8443` 公网代理验证；
+11. supervisord 子进程异常退出自动恢复；
+12. Worker secret 注入和 `RULE_SERVICE_REQUIRED=true`；
+13. 正式 UUID 主站完成 11 次提交、十动作通关、幂等、版本冲突、持久化重读和跨 owner 隔离。
 
 待完成：
 
-1. 把 `https://uu545921-zfkm-aec62664.westb.seetacloud.com:8443` 代理到 `127.0.0.1:8000`，或提供新的受保护 HTTPS 网关；当前 `/health` 为云平台 404；
-2. 配置 supervisor/容器进程托管；
-3. 给 Story Session Worker 设置：
-
-```text
-RULE_SERVICE_URL
-RULE_SERVICE_TOKEN
-RULE_SERVICE_REQUIRED=true
-```
-
-4. 运行 Worker → HTTPS/私网网关 → Prolog → Story Session 写入闭环；
-5. 使用两个真实 AlterU 用户验证存档和会话隔离；
-6. 完成发布前扫描与线上回归后再发布。
+1. 游戏目录迁移后，在 Telegram/AlterU 内部开发工具中验证真实平台用户入口、一次 Prolog 动作和重进恢复；
+2. 使用第二个真实 AlterU 用户补充人工跨账号验收；
+3. 开放普通用户制作游戏前提供服务端签名用户身份。
 
 ## 8. 请协助回复的信息
 

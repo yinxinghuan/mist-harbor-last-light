@@ -25,4 +25,6 @@ npm run check:story-session
 
 `server-baseline/` 保存本游戏对 Wilson 原始 stateful Prolog 框架的兼容扩展、生产路由收口和验证脚本；原始框架本身由平台服务器单独提供，不随公开游戏仓库分发。生产环境只允许 `/health` 与带服务凭据的 `/v1/resolve`，不得开放 `/consult`。
 
+正式主站：`https://game.aiwaves.tech/8a51d15e-7c00-4e27-bc63-25624ee75ac1/`。GitHub Pages 仅作为同提交静态镜像；可写会话和正式 RPG 验收以 UUID 主站为准。
+
 详细设计见 [`doc/requirements.md`](doc/requirements.md)、[`doc/visual.md`](doc/visual.md) 与 [`doc/technical.md`](doc/technical.md)。
