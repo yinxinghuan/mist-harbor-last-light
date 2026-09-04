@@ -4,6 +4,6 @@
 :- use_module('alteru_extension.pl').
 
 main :-
-    http_server(http_dispatch, [ip('127.0.0.1'), port(8000)]),
+    http_server(http_dispatch, [port('127.0.0.1':8000)]),
     format(user_error, 'Baseline service listening on 127.0.0.1:8000~n', []),
     thread_get_message(_).

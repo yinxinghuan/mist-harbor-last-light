@@ -36,7 +36,7 @@ main :-
     remove_production_hidden_handlers,
     env_atom('RULE_SERVICE_BIND', '0.0.0.0', Bind),
     env_integer('RULE_SERVICE_PORT', 8000, Port),
-    http_server(http_dispatch, [ip(Bind), port(Port)]),
+    http_server(http_dispatch, [port(Bind:Port)]),
     format(user_error, 'Production rule service listening on ~w:~d~n', [Bind, Port]),
     thread_get_message(_).
 
