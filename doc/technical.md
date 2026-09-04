@@ -17,6 +17,9 @@ src/story/
   engine/executeTurn.ts              # 无 DOM 的服务端回合流水线
   session/                            # 浏览器 journal、恢复和 Story Session 客户端
   StoryShell.tsx                      # 游戏入口、累积阅读、HUD 和抽屉
+src/shared/runtime/
+  bridge.ts                           # Aigram 宿主桥接，不在游戏内重写协议
+  useGameEvent.ts                     # 显式开始/恢复时上报平台游玩事件
 worker/
   source.ts                           # Worker API 入口和规则服务强制配置
   storySessionRuntime.ts              # Durable Object SQLite 权威存储
@@ -54,6 +57,8 @@ AlterU 内部实验当前按实时宿主用户 ID 派生 owner；平台外访客
 ### API 与部署
 
 前端只访问同 UUID `/<GAME_ID>/api/story/*`。Remix 替换 `src/game-id.ts` 中的 UUID 后，会获得独立 Worker 与 Durable Object namespace；Pages 只是同 commit 的静态镜像，不承载 Story Session。
+
+玩家在首次进入或明确点击“继续游戏”时，通过平台拥有的 `postAigramAPI()` 桥接向 `/note/aigram/ai/game/record/play` 上报一次 `story_play`。页面加载、后台恢复和普通回合不自动上报，避免重复计数；平台外访客因 `isInAigramNow()` 为假不发送。事件不携带用户 ID 或凭据，实际用户由宿主鉴权层附加。
 
 Worker 配置：
 

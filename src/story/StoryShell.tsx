@@ -12,6 +12,9 @@ import { decodeChoiceRecord, resolveNumberedChoiceInput } from './engine/choiceI
 import type { StorySessionDirectory } from './session/storySessionClient'
 import { useStorySessionBootstrap } from './session/useStorySessionBootstrap'
 import { useStorySessionEngine } from './session/useStorySessionEngine'
+import { useGameEvent } from '../shared/runtime/useGameEvent'
+
+const STORY_PLAY_EVENT = 'story_play'
 
 export type StoryEngineView = ReturnType<typeof useStoryEngine> & {
   actionBlocked?: boolean
@@ -435,6 +438,7 @@ function WorldDrawer({ active, setActive, detail, setDetail, cartridge, engine, 
 
 export function StoryGameView({ cartridge, engine, player, onSelect, onLocaleChange }: { cartridge: StoryCartridge; engine: StoryEngineView; player: PlayerProfile; onSelect: (id: string) => void; onLocaleChange: (locale: Locale) => void }) {
   const audio = useStoryAudio(cartridge, engine.save)
+  const playEvent = useGameEvent()
   const [worldOpen, setWorldOpen] = useState(false)
   const [worldTab, setWorldTab] = useState<DrawerId>('party')
   const [worldDetail, setWorldDetail] = useState<WorldDetail | null>(null)
@@ -567,6 +571,8 @@ export function StoryGameView({ cartridge, engine, player, onSelect, onLocaleCha
     engine.act(action, nextLocale)
   }
 
+  const reportPlay = () => playEvent.trigger(STORY_PLAY_EVENT)
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (showResumeLatest) return
@@ -580,13 +586,13 @@ export function StoryGameView({ cartridge, engine, player, onSelect, onLocaleCha
   }, [engine.save.choices, engine.busy, showResumeLatest])
 
   if (!engine.loaded) return <div className="st-loading" style={setCssTheme(cartridge)}><i /><span>{t(cartridge.locale, 'restoring')}</span></div>
-  if (!engine.save.entered) return <Entry cartridge={cartridge} onEnter={() => { audio.cue('open'); engine.enter() }} onSelect={onSelect} mode={engine.mode} setMode={engine.setMode} hasSave={engine.save.scene > 0} remoteAvailable={Boolean(engine.save.remoteChatId)} />
+  if (!engine.save.entered) return <Entry cartridge={cartridge} onEnter={() => { reportPlay(); audio.cue('open'); engine.enter() }} onSelect={onSelect} mode={engine.mode} setMode={engine.setMode} hasSave={engine.save.scene > 0} remoteAvailable={Boolean(engine.save.remoteChatId)} />
   return <main className={`st-shell st-shell--${cartridge.theme.material}`} data-text-size={textSize} style={setCssTheme(cartridge)}>
     <ConversationHeader cartridge={cartridge} engine={engine} audio={audio} openWorld={openWorld} textSize={textSize} setTextSize={setTextSize} />
     <ConversationFeed cartridge={cartridge} engine={engine} feedRef={feedRef} endRef={endRef} onScroll={onScroll} player={player} />
     {showResumeLatest && <div className="st-resume-dialog" role="presentation"><section role="dialog" aria-modal="true" aria-labelledby="st-resume-title">
       <small>{t(cartridge.locale, confirmResumeRestart ? 'startOver' : 'resumeLatestTitle')}</small><h2 id="st-resume-title">{cartridge.copy.title}</h2><p>{t(cartridge.locale, confirmResumeRestart ? 'startOverWarning' : 'resumeLatestDescription')}</p>
-      {!confirmResumeRestart ? <><button type="button" className="st-resume-dialog__primary" autoFocus onClick={() => { setShowResumeLatest(false); follow.current = true; scrollToLatestReadingContext(true, 'auto') }}>{t(cartridge.locale, 'resumeLatestAction')}<Icon name="arrow" /></button>
+      {!confirmResumeRestart ? <><button type="button" className="st-resume-dialog__primary" autoFocus onClick={() => { reportPlay(); setShowResumeLatest(false); follow.current = true; scrollToLatestReadingContext(true, 'auto') }}>{t(cartridge.locale, 'resumeLatestAction')}<Icon name="arrow" /></button>
       <button type="button" className="st-resume-dialog__review" onClick={() => setConfirmResumeRestart(true)}>{t(cartridge.locale, 'resumeFromStart')}</button></> : <><button type="button" className="st-resume-dialog__danger" onClick={() => { setShowResumeLatest(false); setConfirmResumeRestart(false); engine.restartWorld() }}>{t(cartridge.locale, 'startOverConfirm')}</button>
       <button type="button" className="st-resume-dialog__review" autoFocus onClick={() => setConfirmResumeRestart(false)}>{t(cartridge.locale, 'startOverCancel')}</button></>}
     </section></div>}

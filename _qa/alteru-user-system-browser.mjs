@@ -40,6 +40,7 @@ const installBridge = () => {
   const encode = value => btoa(unescape(encodeURIComponent(value)))
   const params = new URLSearchParams(location.search)
   const userId = params.get('telegram_id')
+  window.__qaPlayEvents = []
   if (!userId) return
   window.Aigram = { isInAigram: true, telegramId: userId }
   window.addEventListener('message', event => {
@@ -53,6 +54,8 @@ const installBridge = () => {
       body = { ...body, data: saved ? [{ user_id: userId, resource_data: saved }] : [] }
     } else if (request.url === '/note/aigram/ai/game/save/data') {
       localStorage.setItem(`__qa_platform_save:${userId}`, String(request.data?.resource_data ?? ''))
+    } else if (request.url === '/note/aigram/ai/game/record/play') {
+      window.__qaPlayEvents.push(request.data)
     }
     if (request.method !== 'post') {
       const result = { request_id: request.request_id, success: true, data: body }
@@ -90,6 +93,8 @@ try {
   const pageA = await context.newPage()
   await pageA.goto(appUrl('qa-platform-user-a'))
   await enter(pageA)
+  await pageA.waitForFunction(() => window.__qaPlayEvents.length === 1)
+  assert.deepEqual(await pageA.evaluate(() => window.__qaPlayEvents[0]), { session_id: GAME_UUID, event: 'story_play' })
   await assertProfile(pageA, '雾港测试员 A')
   const firstChoice = pageA.locator('.st-quick-replies button').first()
   await firstChoice.click()
@@ -109,6 +114,10 @@ try {
 
   await pageA.reload()
   await pageA.locator('.st-shell').waitFor()
+  assert.equal(await pageA.evaluate(() => window.__qaPlayEvents.length), 0)
+  await pageA.locator('.st-resume-dialog__primary').click()
+  await pageA.waitForFunction(() => window.__qaPlayEvents.length === 1)
+  assert.deepEqual(await pageA.evaluate(() => window.__qaPlayEvents[0]), { session_id: GAME_UUID, event: 'story_play' })
   const aReloaded = await sessions(pageA, 'qa-platform-user-a')
   assert.equal(aReloaded.body.sessions.length, 1)
   assert.equal(aReloaded.body.sessions[0].session_id, sessionA)
@@ -141,6 +150,14 @@ try {
   assert.equal(denied.status, 404)
   assert.equal(denied.body.code, 'SESSION_NOT_FOUND')
 
+  const external = await context.newPage()
+  await external.goto(`${origin}/?story_runtime=legacy&story_mode=demo&lang=zh`)
+  await external.locator('.st-entry').waitFor()
+  await external.locator('button.st-primary').click()
+  await external.locator('.st-shell').waitFor()
+  await external.waitForTimeout(150)
+  assert.equal(await external.evaluate(() => window.__qaPlayEvents.length), 0)
+
   const userScopedKeys = await pageA.evaluate(() => Object.keys(localStorage).filter(key => key.includes('mist-harbor-last-light-save:user:')).sort())
   assert.equal(userScopedKeys.length, 2)
   assert.ok(userScopedKeys.some(key => key.includes('qa-platform-user-a')))
@@ -149,6 +166,8 @@ try {
   await context.close()
   console.log(JSON.stringify({ ok: true, liveModelCalled: false, productionWrites: false, checks: [
     'live-alteru-profile-a', 'live-alteru-profile-b', 'platform-save-bootstrap',
+    'platform-play-event-on-enter', 'platform-play-event-on-resume',
+    'external-guest-play-event-suppressed',
     'same-user-reload-resume', 'same-user-fresh-device-resume', 'same-user-stable-session', 'cross-user-session-isolation',
     'cross-user-read-denied', 'user-scoped-local-fallback',
   ] }))
