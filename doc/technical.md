@@ -70,6 +70,8 @@ Worker 配置：
 
 正式主站是 `https://game.aiwaves.tech/8a51d15e-7c00-4e27-bc63-25624ee75ac1/`。GitHub Pages 是同 bundle 的静态镜像，不承载可写 Story Session；正式 RPG 验收只以 UUID 主站为准。
 
+同一 UUID 部署地址上的新版本发布后，AlterU 线上卡片会继续打开该地址并自动读取新内容，不需要为每次前端代码更新重新运行迁移工具。Story Session 也继续以同一 UUID 恢复原有存档。
+
 ## 4. 扩展点
 
 - 改剧情、人物、地点、规则或数值：编辑 `src/story/cartridges/mistHarborLastLight.ts`，同步 `server-baseline/games/mist_harbor_last_light/actions.pl`，并运行效果一致性与完整路线测试。
